@@ -4,11 +4,10 @@
 #  cPanel AWS
 #  georgebohnisch.com
 #
-#  This script is run after a new subdomain is added to an
-#  account.
+#  This script outputs XML data passed from hook execution
 #
-#  It modifies the account DNS Zone files by changing
-#  the local IP address to the public IP address.
+#  A file is created (/tmp/cpanel_hook_output) containing
+#  the XML output structure.
 #
 #  File: debug_hook
 #  Version: 1.0
