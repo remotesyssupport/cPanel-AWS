@@ -1,0 +1,48 @@
+#!/usr/local/cpanel/3rdparty/bin/perl
+
+# --------------------------------------------------------
+#  cPanel AWS
+#  georgebohnisch.com
+#
+#  This script is run after a new parked domain is added
+#  to an account.
+#
+#  It modifies the account DNS Zone files by changing
+#  the local IP address to the public IP address.
+#
+#  File: /usr/local/cpanel/hooks/park/park
+#  Version: 1.0
+# --------------------------------------------------------
+
+use strict;
+use warnings;
+
+use XML::Simple;
+use Data::Dumper;
+
+my $xml;
+
+while (<STDIN>) {
+        $xml .= $_;
+}
+
+my $xml_hashed = XMLin($xml);
+
+my $domain = $xml_hashed->{'cpanelevent'}->{'params'}->{'domain'} || $xml_hashed->{'cpanelevent'}{'params'}{'param0'};
+
+my $LOCAL_IP = `curl -s http://169.254.169.254/latest/meta-data/local-ipv4 2>&1`;
+my $PUBLIC_IP = `curl -s http://169.254.169.254/latest/meta-data/public-ipv4 2>&1`;
+
+open(FILE, "</var/named/$domain.db") || die "\nZone file not found......";
+my @lines = <FILE>;
+close(FILE);
+
+my @newlines;
+foreach(@lines) {
+   $_ =~ s/$LOCAL_IP/$PUBLIC_IP/g;
+   push(@newlines,$_);
+}
+
+open(FILE, ">/var/named/$domain.db") || die "\nZone file not found......";
+print FILE @newlines;
+close(FILE);

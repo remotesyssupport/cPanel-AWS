@@ -1,0 +1,38 @@
+#!/usr/local/cpanel/3rdparty/bin/perl
+
+# --------------------------------------------------------
+#  cPanel AWS
+#  georgebohnisch.com
+#
+#  This script is run after an account has been modified.
+#
+#  It modifies the new account DNS Zone files by changing
+#  the local IP address to the public IP address.
+#
+#  File: /scripts/postmodifyacct
+#  Version: 1.0
+# -------------------------------------------------------- 
+
+use strict;
+use warnings;
+
+my $LOCAL_IP = `curl -s http://169.254.169.254/latest/meta-data/local-ipv4 2>&1`;
+my $PUBLIC_IP = `curl -s http://169.254.169.254/latest/meta-data/public-ipv4 2>&1`;
+
+print "\nModifying DNS Zones for AWS ($LOCAL_IP)->($PUBLIC_IP)......";
+
+my %OPTS = @ARGV;
+
+open(FILE, "</var/named/$OPTS{'domain'}.db") || die "Zone file not found......";
+my @lines = <FILE>;
+close(FILE);
+
+my @newlines;
+foreach(@lines) {
+   $_ =~ s/$LOCAL_IP/$PUBLIC_IP/g;
+   push(@newlines,$_);
+}
+
+open(FILE, ">/var/named/$OPTS{'domain'}.db") || die "Zone file not found......";
+print FILE @newlines;
+close(FILE);

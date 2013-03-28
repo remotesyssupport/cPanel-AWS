@@ -1,0 +1,31 @@
+#!/usr/local/cpanel/3rdparty/bin/perl
+
+# --------------------------------------------------------
+#  cPanel AWS
+#  georgebohnisch.com
+#
+#  This script is run after a new subdomain is added to an
+#  account.
+#
+#  It modifies the account DNS Zone files by changing
+#  the local IP address to the public IP address.
+#
+#  File: debug_hook
+#  Version: 1.0
+# --------------------------------------------------------
+
+use strict;
+use warnings;
+
+use XML::Simple;
+use Data::Dumper;
+
+my $xml;
+
+while (<STDIN>) {
+        $xml .= $_;
+}
+
+open(my $fh, ">>", "/tmp/cpanel_hook_output");
+print {$fh} "\tXML:\n$xml\n";
+close($fh);
