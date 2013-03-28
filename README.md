@@ -1,4 +1,4 @@
-# cPanel AWS Instance Kit
+# cPanel AWS Integration Kit
 The goal of this project is to develop an integration kit for users wishing to run a cPanel Architecture
 on Amazon AWS services (EC2/VPC).
 
